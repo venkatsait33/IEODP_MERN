@@ -5,9 +5,25 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { AuditLog } from "../model/auditLog.model.js";
 
 export const createUser = asyncHandler(async (req, res) => {
-  const { userName, firstName, lastName, email, password } = req.body;
+  const {
+    userName,
+    firstName,
+    lastName,
+    email,
+    password,
+    mobileNumber,
+    gender,
+  } = req.body;
 
-  if (!userName || !firstName || !lastName || !email || !password) {
+  if (
+    !userName ||
+    !firstName ||
+    !lastName ||
+    !email ||
+    !password ||
+    !mobileNumber ||
+    !gender
+  ) {
     return res.status(400).json({ message: "Please fill all fields" });
   }
 
@@ -24,6 +40,8 @@ export const createUser = asyncHandler(async (req, res) => {
     lastName,
     email,
     password: hashPassword,
+    mobileNumber,
+    profile: [{ gender }],
   };
 
   const userCreate = await User.create(userData);
@@ -98,6 +116,7 @@ export const login = asyncHandler(async (req, res) => {
       message: "Login successful",
       user: safeUser,
       success: true,
+      token,
     });
 });
 

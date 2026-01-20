@@ -28,7 +28,7 @@ const UserSchema = mongoose.Schema(
     profile: {
       gender: {
         type: String,
-        enum: ["Male", "Female", "Other"],
+        enum: ["MALE", "FEMALE", "OTHER"],
       },
       photo: {
         type: String,
@@ -38,6 +38,9 @@ const UserSchema = mongoose.Schema(
       type: String,
       enum: ["operator", "admin", "leadership", "management", "auditor"],
       default: "operator",
+    },
+    mobileNumber: {
+      type: Number,
     },
     accountStatus: {
       type: String,

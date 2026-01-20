@@ -12,7 +12,7 @@ export const WORKFLOW_RULES = {
   },
 
   ACTION_TAKEN: {
-    allowedRoles: ["auditors"],
+    allowedRoles: ["auditor"],
     allowedActions: [
       "AUDITOR_APPROVED",
       "AUDITOR_REJECTED",

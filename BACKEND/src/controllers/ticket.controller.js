@@ -77,9 +77,22 @@ export const createTicket = async (req, res) => {
 };
 
 export const getTickets = async (req, res) => {
-  const tickets = await Ticket.find()
-    .populate("raisedBy", "userName role")
-    .sort({ createdAt: -1 });
+  const page = Number(req.query.page) || 1;
+  const limit = Number(req.query.limit) || 10;
+  const skip = (page - 1) * limit;
+
+  const query = {};
+
+  if (req.query.status) query.status = req.query.status;
+  if (req.query.priority) query.priority = req.query.priority;
+  if (req.query.search) {
+    query.title = { $regex: req.query.search, $options: "i" };
+  }
+
+  const tickets = await Ticket.find(query)
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit);
 
   res.json(tickets);
 };
