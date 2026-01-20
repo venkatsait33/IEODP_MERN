@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  assignUserRole,
   changeUserStatus,
   createUser,
   getAllUsers,
@@ -14,11 +15,19 @@ router.post("/register", createUser);
 router.post("/login", login);
 
 router.get("/users", isAuthenticated, authorizeRoles("admin"), getAllUsers);
+
 router.post(
   "/admin/change-status",
   isAuthenticated,
   authorizeRoles("admin"),
   changeUserStatus,
+);
+
+router.post(
+  "/admin/:id/assign-role",
+  isAuthenticated,
+  authorizeRoles("admin"),
+  assignUserRole,
 );
 
 export default router;

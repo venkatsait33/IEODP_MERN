@@ -2,6 +2,7 @@ import { User } from "../model/user.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import { AuditLog } from "../model/auditLog.model.js";
 
 export const createUser = asyncHandler(async (req, res) => {
   const { userName, firstName, lastName, email, password } = req.body;
@@ -147,3 +148,75 @@ export const changeUserStatus = asyncHandler(async (req, res, next) => {
     success: true,
   });
 });
+
+/**
+ * ADMIN: Assign role & status to user
+ * PATCH /api/admin/users/:id/assign-role
+ */
+export const assignUserRole = async (req, res) => {
+  try {
+    const { role, accountStatus } = req.body;
+    const userId = req.params.id;
+
+    // Validate role
+    const allowedRoles = [
+      "operator",
+      "admin",
+      "leadership",
+      "management",
+      "auditor",
+    ];
+
+    if (role && !allowedRoles.includes(role)) {
+      return res.status(400).json({ message: "Invalid role" });
+    }
+
+    // Validate status
+    const allowedStatuses = ["active", "inactive", "pending", "suspended"];
+    if (accountStatus && !allowedStatuses.includes(accountStatus)) {
+      return res.status(400).json({ message: "Invalid status" });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const previousState = {
+      role: user.role,
+      accountStatus: user.accountStatus,
+    };
+
+    if (role) user.role = role;
+    if (accountStatus) user.accountStatus = accountStatus;
+
+    await user.save();
+
+    // 🔐 Audit log
+    await AuditLog.create({
+      entity: "USER",
+      entityId: user._id,
+      action: "USER_ROLE_UPDATED",
+      performedBy: req.user._id,
+      role: req.user.role,
+      previousState,
+      newState: {
+        role: user.role,
+        status: user.accountStatus,
+      },
+    });
+
+    res.json({
+      message: "User role/status updated successfully",
+      user: {
+        id: user._id,
+        name: `${user.userName}}`,
+        role: user.role,
+        status: user.accountStatus,
+      },
+    });
+  } catch (error) {
+    console.error("Assign role error:", error);
+    res.status(500).json({ message: "Failed to update user role" });
+  }
+};

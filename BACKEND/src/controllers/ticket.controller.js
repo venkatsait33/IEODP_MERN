@@ -95,7 +95,7 @@ export const getTicketById = asyncHandler(async (req, res) => {
   }
 
   const timeline = await TicketAction.find({ ticketId: ticket._id })
-    .populate("performedBy", "firstName lastName role")
+    .populate("performedBy", "userName role")
     .sort({ createdAt: 1 });
 
   res.json({ ticket, timeline });

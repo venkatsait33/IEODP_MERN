@@ -1,18 +1,18 @@
 export const WORKFLOW_RULES = {
   SUBMITTED: {
-    allowedRoles: ["LEADERSHIP"],
+    allowedRoles: ["leadership"],
     allowedActions: ["LEADERSHIP_REVIEW"],
     nextStatus: "FORWARDED_TO_MANAGEMENT",
   },
 
   FORWARDED_TO_MANAGEMENT: {
-    allowedRoles: ["MANAGEMENT"],
+    allowedRoles: ["management"],
     allowedActions: ["MANAGEMENT_ACTION"],
     nextStatus: "ACTION_TAKEN",
   },
 
   ACTION_TAKEN: {
-    allowedRoles: ["AUDITORS"],
+    allowedRoles: ["auditors"],
     allowedActions: [
       "AUDITOR_APPROVED",
       "AUDITOR_REJECTED",
@@ -21,7 +21,7 @@ export const WORKFLOW_RULES = {
   },
 
   REVERIFY: {
-    allowedRoles: ["OPERATIONS", "LEADERSHIP", "MANAGEMENT"],
+    allowedRoles: ["operator", "leadership", "management"],
     allowedActions: ["REVERIFY_RESPONSE"],
     nextStatus: "FORWARDED_TO_MANAGEMENT",
   },
