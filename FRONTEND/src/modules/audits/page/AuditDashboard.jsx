@@ -26,7 +26,7 @@ const AuditorDashboard = () => {
   );
 
   const approvedCount = tickets.filter(
-    (t) => t.auditorDecision === "ACCEPTED",
+    (t) => t.auditorDecision === "APPROVED",
   ).length;
 
   const rejectedCount = tickets.filter(

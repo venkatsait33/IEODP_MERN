@@ -9,7 +9,9 @@ const roleBadgeMap = {
 };
 
 const AuditTimeline = ({ ticketId }) => {
-  const { data, isLoading } = useGetAuditLogsByTicketQuery(ticketId);
+  const { data, isLoading } = useGetAuditLogsByTicketQuery(ticketId, {
+    refetchOnMountOrArgChange: true,
+  });
 
   if (isLoading) {
     return (

@@ -5,7 +5,9 @@ import { toast } from "react-toastify";
 import { useAddTicketActionMutation } from "../ticketsApi";
 
 const AuditorDecisionForm = ({ ticket }) => {
-  const [addTicketAction, { isLoading }] = useAddTicketActionMutation();
+  const [addTicketAction, { isLoading }] = useAddTicketActionMutation({
+    refetchOnMountOrArgChange: true,
+  });
 
   const {
     register,

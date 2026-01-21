@@ -19,8 +19,6 @@ const TicketDetailsPage = () => {
     refetchOnMountOrArgChange: true,
   });
 
-  console.log(data);
-
   if (isLoading)
     return (
       <div className="loading loading-spinner mx-auto flex justify-center" />
