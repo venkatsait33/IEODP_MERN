@@ -86,7 +86,7 @@ const LoginForm = () => {
             {...register("password")}
           />
           <div className="text-right">
-            <Link to="/reset-password" className="link text-sm">
+            <Link to="/rest-password" className="link text-sm">
               Forgot password?
             </Link>
           </div>

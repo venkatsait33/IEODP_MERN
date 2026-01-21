@@ -32,7 +32,7 @@ const RestPassword = () => {
 
   const handlePaste = () => {};
   return (
-    <div className="flex  max-sm:flex-col max-sm:gap-2 max-sm:mt-20 p-4 items-center justify-center w-full mx-auto bg-gradient-to-br from-lime-500 to-lime-900">
+    <div className="flex  max-sm:flex-col max-sm:gap-2 gap-4 h-screen  max-sm:mt-20 p-4 items-center justify-center w-full mx-auto bg-gradient-to-br from-lime-500 to-lime-900">
       <div className="p-4 border rounded-lg shadow-lg bg-base-100 w-96">
         <form className="card" onSubmit={onSubmitEmailHandler}>
           <div className="card-body">

@@ -6,7 +6,10 @@ const tokenFromStorage = localStorage.getItem("token");
 const initialState = {
   user: userFromStorage ? JSON.parse(userFromStorage) : null,
   accessToken: tokenFromStorage || null,
-  role: userFromStorage ? JSON.parse(userFromStorage)?.role : null,
+  role: userFromStorage
+    ? JSON.parse(userFromStorage)?.role?.toUpperCase()
+    : null,
+  initialized: true, // 🔥 ADD THIS
 };
 
 const authSlice = createSlice({
@@ -25,7 +28,7 @@ const authSlice = createSlice({
 
     logout: (state) => {
       state.user = null;
-      state.token = null;
+      state.accessToken = null;
       state.role = null;
 
       localStorage.removeItem("user");

@@ -5,13 +5,31 @@ import OfflineDetector from "./shared/OfflineDetector";
 import Navbar from "./layout/Navbar";
 import ScrollUpButton from "./components/ScrollUpButton";
 import { useScrollRestoration } from "./hooks/useScrollRestoration";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { setCredentials } from "./auth/authSlice";
 
 const App = () => {
   const location = useLocation();
-  useScrollRestoration()
+  useScrollRestoration();
+  const dispatch = useDispatch();
 
   const hideNavbarRoutes = ["/"];
   const shouldHideNavbar = hideNavbarRoutes.includes(location.pathname);
+
+  useEffect(() => {
+    const user = localStorage.getItem("user");
+    const token = localStorage.getItem("token");
+
+    if (user && token) {
+      dispatch(
+        setCredentials({
+          user: JSON.parse(user),
+          accessToken: token,
+        }),
+      );
+    }
+  }, []);
 
   return (
     <div className=" h-screen ">
@@ -21,7 +39,6 @@ const App = () => {
         <AppRoutes />
         <Footer />
         <ScrollUpButton />
-
       </div>
     </div>
   );
