@@ -1,24 +1,37 @@
 import { toast } from "react-toastify";
-import { useUpdateUserMutation } from "../../userApi";
-import { ROLES } from "../../../utils/roles";
+import {
+  useUpdateUserRoleMutation,
+  useUpdateUserStatusMutation,
+} from "../../../api/adminApi";
 
 const UserRow = ({ user }) => {
-  const [updateUser] = useUpdateUserMutation();
+  const [updateUserStatus] = useUpdateUserStatusMutation();
+  const [updateUserRole] = useUpdateUserRoleMutation();
 
   const handleRoleChange = async (e) => {
-    await updateUser({
-      id: user.id,
-      data: { role: e.target.value },
-    });
-    toast.success("Role updated");
+    try {
+      await updateUserRole({
+        id: user._id,
+        data: { role: e.target.value.toLowerCase() },
+      }).unwrap();
+
+      toast.success("Role updated successfully");
+    } catch (err) {
+      toast.error("Failed to update role");
+    }
   };
 
   const handleStatusChange = async (e) => {
-    await updateUser({
-      id: user.id,
-      data: { status: e.target.value },
-    });
-    toast.success("Status updated");
+    try {
+      await updateUserStatus({
+        id: user._id,
+        data: { accountStatus: e.target.value },
+      }).unwrap();
+
+      toast.success("Status updated successfully");
+    } catch (err) {
+      toast.error("Failed to update status");
+    }
   };
 
   return (
@@ -27,7 +40,7 @@ const UserRow = ({ user }) => {
         {user.firstName} {user.lastName}
       </td>
       <td>{user.email}</td>
-      <td>{user.username}</td>
+      <td>{user.userName}</td>
 
       {/* ROLE */}
       <td>
@@ -36,11 +49,11 @@ const UserRow = ({ user }) => {
           value={user.role}
           onChange={handleRoleChange}
         >
-          <option value={ROLES.OPERATOR}>operator</option>
-          <option value={ROLES.MANAGEMENT}>Management</option>
-          <option value={ROLES.LEADERSHIP}>Leadership</option>
-          <option value={ROLES.AUDITOR}>Auditor</option>
-          <option value={ROLES.ADMIN}>Admin</option>
+          <option value="operator">operator</option>
+          <option value="management">Management</option>
+          <option value="leadership">Leadership</option>
+          <option value="auditor">Auditor</option>
+          <option value="admin">Admin</option>
         </select>
       </td>
 
@@ -48,12 +61,13 @@ const UserRow = ({ user }) => {
       <td>
         <select
           className="select select-bordered select-sm"
-          value={user.status}
+          value={user.accountStatus}
           onChange={handleStatusChange}
         >
-          <option value="ACTIVE">Active</option>
-          <option value="INACTIVE">Inactive</option>
-          <option value="SUSPENDED">Suspended</option>
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+          <option value="pending">Pending</option>
+          <option value="suspended">Suspended</option>
         </select>
       </td>
     </tr>

@@ -92,7 +92,8 @@ export const getTickets = async (req, res) => {
   const tickets = await Ticket.find(query)
     .sort({ createdAt: -1 })
     .skip(skip)
-    .limit(limit);
+    .limit(limit)
+    .populate("raisedBy", "userName role");
 
   res.json(tickets);
 };

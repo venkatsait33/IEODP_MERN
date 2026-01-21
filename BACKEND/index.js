@@ -7,6 +7,8 @@ import cookieParser from "cookie-parser";
 import { errorHandler } from "./src/utils/errorHandler.js";
 import ticketRoutes from "./src/routes/ticket.routes.js";
 import auditRoutes from "./src/routes/audit.routes.js";
+import adminRoutes from "./src/routes/admin.routes.js";
+import dashboardData from "./src/routes/dashboard.routes.js";
 dotenv.config();
 
 const app = express();
@@ -21,6 +23,8 @@ app.use(errorHandler);
 app.use("/api/v1/auth", userRoutes);
 app.use("/api/v1/ticket", ticketRoutes);
 app.use("/api/v1/audit", auditRoutes);
+app.use("/api/v1/admin", adminRoutes);
+app.use("/api/v1/dashboard", dashboardData);
 
 app.get("/", (req, res) => {
   res.send("Hello World!");

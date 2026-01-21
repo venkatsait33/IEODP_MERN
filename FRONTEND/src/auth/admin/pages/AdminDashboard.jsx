@@ -1,23 +1,14 @@
-import { useSelector } from "react-redux";
-import { useGetUsersQuery } from "../../userApi";
-import { useGetTicketsQuery } from "../../../modules/tickets/ticketsApi";
-import { dashboardConfigs } from "../../../config/dashboardConfig";
 import DashboardRenderer from "../../../components/dashboard/DashboardRenderer";
+import { useGetDashboardQuery } from "../../../api/dashboardApi";
 
 const AdminDashboard = () => {
-  const { role } = useSelector((state) => state.auth);
+  const { data, isLoading } = useGetDashboardQuery();
 
-  const { data: users = [], isLoading: usersLoading } = useGetUsersQuery();
-  const { data: tickets = [], isLoading: ticketsLoading } =
-    useGetTicketsQuery();
-
-  if (usersLoading || ticketsLoading) {
+  if (isLoading) {
     return (
       <div className="loading loading-spinner mx-auto flex justify-center" />
     );
   }
-
-  const config = dashboardConfigs[role] || [];
 
   return (
     <div className="space-y-6">
@@ -28,7 +19,11 @@ const AdminDashboard = () => {
         </p>
       </div>
 
-      <DashboardRenderer config={config} users={users} tickets={tickets} />
+      <DashboardRenderer
+        config={data.config}
+        users={data.users}
+        tickets={data.tickets}
+      />
     </div>
   );
 };

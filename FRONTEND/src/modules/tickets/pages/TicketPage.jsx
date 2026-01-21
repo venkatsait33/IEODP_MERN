@@ -10,21 +10,18 @@ import { fadeIn, fadeUp, staggerContainer } from "../../../utils/motionUtils";
 
 const TicketsPage = () => {
   const [filters, setFilters] = useState({
-    page: 1,
-    limit: 10,
     status: "",
     priority: "",
     search: "",
   });
+  const [page, setPage] = useState(1);
 
   const { role } = useSelector((state) => state.auth);
   const {
     data: tickets = [],
     isLoading,
     isError,
-  } = useGetTicketsQuery(filters);
-
-  const hasNext = tickets.length === filters.limit;
+  } = useGetTicketsQuery({ filters, page });
 
   if (isLoading)
     return (
@@ -84,11 +81,18 @@ const TicketsPage = () => {
 
         {/* Pagination */}
         <motion.div variants={fadeUp}>
-          <Pagination
-            page={filters.page}
-            setPage={(page) => setFilters((prev) => ({ ...prev, page }))}
-            hasNext={hasNext}
-          />
+          <div className="flex justify-end gap-2 mt-4">
+            <button
+              className="btn btn-sm"
+              onClick={() => setPage(page - 1)}
+              disabled={page === 1}
+            >
+              Prev
+            </button>
+            <button className="btn btn-sm" onClick={() => setPage(page + 1)}>
+              Next
+            </button>
+          </div>
         </motion.div>
       </motion.div>
     </div>

@@ -20,7 +20,7 @@ const AuditTimeline = ({ ticketId }) => {
   if (!data || !data.timeline?.length) {
     return (
       <div className="card bg-base-200 p-4 shadow">
-        <h3 className="font-semibold mb-2">Audit Timeline</h3>
+        <h3 className="font-semibold mb-2">Ticket Timeline</h3>
         <p className="text-sm text-base-content/60">No activity recorded yet</p>
       </div>
     );
@@ -29,7 +29,7 @@ const AuditTimeline = ({ ticketId }) => {
   return (
     <div className="card bg-base-200 p-4 shadow">
       <h3 className="font-semibold mb-4">
-        Audit Timeline ({data.totalEvents})
+        Ticket Timeline ({data.totalEvents})
       </h3>
 
       <div className="relative border-l-2 border-base-300 ml-3 space-y-6">

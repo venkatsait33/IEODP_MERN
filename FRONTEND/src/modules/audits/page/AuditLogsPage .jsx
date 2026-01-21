@@ -1,43 +1,43 @@
 import { useState } from "react";
-import { useGetAuditLogsQuery } from "../auditApi";
 import AuditTable from "../components/AuditTable";
 import AuditFilters from "../components/AuditFilters";
+import { useGetTicketsQuery } from "../../tickets/ticketsApi";
+import { motion } from "framer-motion";
+import { fadeIn, fadeUp } from "../../../utils/motionUtils";
 
 const AuditLogsPage = () => {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
 
-  const { data, isLoading } = useGetAuditLogsQuery({
-    page,
-    limit: 10,
-    search,
-  });
-
-  console.log(data);
+  const { data, isLoading } = useGetTicketsQuery({ page, search });
 
   if (isLoading) return <div className="loading loading-spinner" />;
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold mb-4">Audit Logs</h1>
+    <motion.div initial="hidden" animate="visible" variants={fadeIn}>
+      <motion.h1 variants={fadeUp} className="text-2xl font-bold mb-4">
+        Audit Logs
+      </motion.h1>
 
       <AuditFilters search={search} setSearch={setSearch} />
 
-      <AuditTable logs={data?.logs || []} />
+      <AuditTable logs={data || []} />
 
-      <div className="flex justify-end gap-2 mt-4">
-        <button
-          className="btn btn-sm"
-          onClick={() => setPage(page - 1)}
-          disabled={page === 1}
-        >
-          Prev
-        </button>
-        <button className="btn btn-sm" onClick={() => setPage(page + 1)}>
-          Next
-        </button>
-      </div>
-    </div>
+      <motion.div variants={fadeUp}>
+        <div className="flex justify-end gap-2 mt-4">
+          <button
+            className="btn btn-sm"
+            onClick={() => setPage(page - 1)}
+            disabled={page === 1}
+          >
+            Prev
+          </button>
+          <button className="btn btn-sm" onClick={() => setPage(page + 1)}>
+            Next
+          </button>
+        </div>
+      </motion.div>
+    </motion.div>
   );
 };
 

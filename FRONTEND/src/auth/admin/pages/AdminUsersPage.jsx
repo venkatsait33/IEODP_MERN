@@ -1,4 +1,4 @@
-import { useGetUsersQuery } from "../../userApi";
+import { useGetUsersQuery } from "../../../api/adminApi";
 import UserRow from "../components/UserRow";
 
 const AdminUsersPage = () => {
@@ -9,6 +9,8 @@ const AdminUsersPage = () => {
       <div className="loading loading-spinner mx-auto flex justify-center" />
     );
   }
+
+  console.log(users.users);
 
   return (
     <div>
@@ -27,18 +29,18 @@ const AdminUsersPage = () => {
           </thead>
 
           <tbody>
-            {users.map((user) => (
+            {users?.users?.map((user) => (
               <UserRow key={user.id} user={user} />
             ))}
           </tbody>
         </table>
       </div>
 
-      {users.length === 0 && (
+      {/* {users.length === 0 && (
         <div className="text-center text-base-content/60 mt-6">
           No users found
         </div>
-      )}
+      )} */}
     </div>
   );
 };
