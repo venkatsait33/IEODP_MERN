@@ -115,14 +115,19 @@ export const getTicketById = asyncHandler(async (req, res) => {
 });
 
 export const addTicketAction = async (req, res) => {
-  const { actionType, comment, auditorDecision } = req.body;
-
-  const ticket = await Ticket.findById(req.params.id);
-  if (!ticket) {
-    return res.status(404).json({ message: "Ticket not found" });
-  }
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
   try {
+    const { actionType, comment } = req.body;
+
+    const ticket = await Ticket.findById(req.params.id).session(session);
+    if (!ticket) {
+      await session.abortTransaction();
+      return res.status(404).json({ message: "Ticket not found" });
+    }
+
+    // ✅ Validate workflow rules
     const rule = validateWorkflowAction({
       ticketStatus: ticket.status,
       userRole: req.user.role,
@@ -130,41 +135,76 @@ export const addTicketAction = async (req, res) => {
     });
 
     const previousStatus = ticket.status;
+    let nextStatus = previousStatus;
+    let auditorDecision = null;
 
-    // Handle auditor decisions
+    // ✅ Auditor actions
     if (actionType === "AUDITOR_APPROVED") {
-      ticket.status = "CLOSED";
-      ticket.auditorDecision = "APPROVED";
+      nextStatus = "CLOSED";
+      auditorDecision = "APPROVED";
     }
 
     if (actionType === "AUDITOR_REJECTED") {
-      ticket.status = "CLOSED";
-      ticket.auditorDecision = "REJECTED";
+      nextStatus = "CLOSED";
+      auditorDecision = "REJECTED";
     }
 
     if (actionType === "AUDITOR_REVERIFY") {
-      ticket.status = "REVERIFY";
-      ticket.auditorDecision = "REVERIFY";
+      nextStatus = "REVERIFY";
+      auditorDecision = "REVERIFY";
     }
 
-    if (rule.nextStatus && ticket.status === previousStatus) {
-      ticket.status = rule.nextStatus;
+    // ✅ Other workflow transitions
+    if (rule.nextStatus && previousStatus === ticket.status) {
+      nextStatus = rule.nextStatus;
     }
 
-    await ticket.save();
+    // ✅ Update ticket
+    ticket.status = nextStatus;
+    if (auditorDecision) ticket.auditorDecision = auditorDecision;
 
-    await TicketAction.create({
-      ticketId: ticket._id,
+    await ticket.save({ session });
+
+    // ✅ Ticket timeline (workflow history)
+    await TicketAction.create(
+      [
+        {
+          ticketId: ticket._id,
+          performedBy: req.user._id,
+          role: req.user.role,
+          actionType,
+          comment,
+          previousStatus,
+          newStatus: nextStatus,
+        },
+      ],
+      { session },
+    );
+
+    // ✅ Audit log (enterprise-grade)
+    await createAuditLog({
+      session,
+      entity: "TICKET",
+      entityId: ticket._id,
+      action: actionType,
       performedBy: req.user._id,
       role: req.user.role,
-      actionType,
-      comment,
-      previousStatus,
-      newStatus: ticket.status,
+      previousState: previousStatus,
+      newState: nextStatus,
+      metadata: {
+        comment,
+        auditorDecision,
+      },
     });
 
-    res.json(ticket);
+    await session.commitTransaction();
+    session.endSession();
+
+    res.status(200).json(ticket);
   } catch (err) {
+    await session.abortTransaction();
+    session.endSession();
+
     res.status(403).json({ message: err.message });
   }
 };

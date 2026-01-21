@@ -3,7 +3,7 @@
 // export const auditApi = baseApi.injectEndpoints({
 //     endpoints: (builder) => ({
 //         // getAuditLogs: builder.query({
-//         //     query: () => "/auditLogs",   
+//         //     query: () => "/auditLogs",
 //         //     providesTags: ["Audits"],
 //         // }),
 //         getAuditLogs: builder.query({
@@ -15,10 +15,9 @@
 //                 `/auditLogs?entity=${entity}&entityId=${entityId}`,
 //         }),
 
-
 //         logAudit: builder.mutation({
 //             query: (data) => ({
-//                 url: "/auditLogs",        
+//                 url: "/auditLogs",
 //                 method: "POST",
 //                 body: data,
 //             }),
@@ -31,33 +30,33 @@
 import { baseApi } from "../../api/baseApi";
 
 export const auditApi = baseApi.injectEndpoints({
-    endpoints: (builder) => ({
-        // 🔹 Get all audit logs (admin/auditor view)
-        getAuditLogs: builder.query({
-            query: () => "/auditLogs",
-            providesTags: ["Audits"],
-        }),
-
-        // 🔹 Get audit logs for a specific ticket
-        getAuditLogsByTicket: builder.query({
-            query: (ticketId) => `/auditLogs?entity=TICKET&entityId=${ticketId}`,
-            providesTags: ["Audits"],
-        }),
-
-        // 🔹 Create audit log entry
-        logAudit: builder.mutation({
-            query: (data) => ({
-                url: "/auditLogs",
-                method: "POST",
-                body: data,
-            }),
-            invalidatesTags: ["Audits"], // 🔥 important for auto refresh
-        }),
+  endpoints: (builder) => ({
+    // 🔹 Get all audit logs (admin/auditor view)
+    getAuditLogs: builder.query({
+      query: () => "/audit/",
+      providesTags: ["Audits"],
     }),
+
+    // 🔹 Get audit logs for a specific ticket
+    getAuditLogsByTicket: builder.query({
+      query: (ticketId) => `/audit/${ticketId}`,
+      providesTags: ["Audits"],
+    }),
+
+    // 🔹 Create audit log entry
+    logAudit: builder.mutation({
+      query: (data) => ({
+        url: "/auditLogs",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Audits"], // 🔥 important for auto refresh
+    }),
+  }),
 });
 
 export const {
-    useGetAuditLogsQuery,
-    useGetAuditLogsByTicketQuery,
-    useLogAuditMutation,
+  useGetAuditLogsQuery,
+  useGetAuditLogsByTicketQuery,
+  useLogAuditMutation,
 } = auditApi;

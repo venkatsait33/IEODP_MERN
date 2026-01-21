@@ -16,6 +16,11 @@ routes.get("/", isAuthenticated, getTickets);
 
 routes.get("/:id", isAuthenticated, getTicketById);
 
-routes.post("/:id/action", isAuthenticated, addTicketAction);
+routes.post(
+  "/:id/action",
+  isAuthenticated,
+  idempotencyMiddleware,
+  addTicketAction,
+);
 
 export default routes;

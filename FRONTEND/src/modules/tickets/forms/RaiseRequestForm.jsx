@@ -26,6 +26,7 @@ const RaiseRequestForm = () => {
       status: "SUBMITTED",
       raisedBy: user._id,
       createdAt: new Date().toISOString(),
+      requestId: crypto.randomUUID(),
     });
 
     reset();

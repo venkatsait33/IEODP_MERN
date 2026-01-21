@@ -10,6 +10,7 @@ import { motion } from "framer-motion";
 import LeaderShipCommentForm from "../forms/LeaderShipCommentForm";
 import ManagementActionForm from "../forms/ManagementActionForm";
 import AuditorDecisionForm from "../forms/AuditorDecisionForm";
+import TicketCommentBlock from "../components/TicketCommentBlock";
 
 const TicketDetailsPage = () => {
   const { id } = useParams();
@@ -28,15 +29,28 @@ const TicketDetailsPage = () => {
   if (!data.ticket) {
     return <div className="alert alert-error">Ticket not found</div>;
   }
+
   const canLeadershipAct =
-    data.ticket.status === TICKET_STATUS.SUBMITTED ||
-    data.ticket.status === TICKET_STATUS.REVERIFY;
+    role === ROLES.LEADERSHIP &&
+    [TICKET_STATUS.SUBMITTED, TICKET_STATUS.REVERIFY].includes(
+      data.ticket.status,
+    );
 
   const canManagementAct =
-    data.ticket.status === TICKET_STATUS.FORWARDED_TO_MANAGEMENT ||
-    data.ticket.status === TICKET_STATUS.REVERIFY;
+    role === ROLES.MANAGEMENT &&
+    [TICKET_STATUS.FORWARDED_TO_MANAGEMENT, TICKET_STATUS.REVERIFY].includes(
+      data.ticket.status,
+    );
 
-  const canAuditorAct = data.ticket.status === TICKET_STATUS.ACTION_TAKEN;
+  const canAuditorAct =
+    role === ROLES.AUDITOR && data.ticket.status === TICKET_STATUS.ACTION_TAKEN;
+
+  const getLatestCommentByRole = (timeline, role) => {
+    return [...timeline].reverse().find((t) => t.role === role && t.comment);
+  };
+
+  const leadershipComment = getLatestCommentByRole(data.timeline, "leadership");
+  const managementComment = getLatestCommentByRole(data.timeline, "management");
 
   return (
     <div className="space-y-6">
@@ -64,54 +78,63 @@ const TicketDetailsPage = () => {
           />
         </motion.div>
 
+        {data.ticket.status === TICKET_STATUS.CLOSED && (
+          <div className="alert alert-success">
+            This ticket has been closed. No further actions allowed.
+          </div>
+        )}
+
+        {data.ticket.status === TICKET_STATUS.REVERIFY && (
+          <div className="alert alert-warning">
+            Reverification requested. Please update the ticket.
+          </div>
+        )}
+
         {/* Leadership Section */}
-        {role === ROLES.LEADERSHIP && canLeadershipAct && (
-          <LeaderShipCommentForm ticket={data.ticket} />
-        )}
+        {/* Leadership */}
+        {canLeadershipAct && <LeaderShipCommentForm ticket={data.ticket} />}
 
-        {/* Management Section */}
-        {role === ROLES.MANAGEMENT && canManagementAct && (
-          <ManagementActionForm ticket={data.ticket} />
-        )}
+        {/* Management */}
+        {canManagementAct && <ManagementActionForm ticket={data.ticket} />}
 
-        {/* Auditor Section */}
-        {role === ROLES.AUDITOR && canAuditorAct && (
-          <AuditorDecisionForm ticket={data.ticket} />
-        )}
+        {/* Auditor */}
+        {canAuditorAct && <AuditorDecisionForm ticket={data.ticket} />}
 
         {/* Read-only info blocks */}
         <motion.div
           variants={fadeUp}
-          className="grid grid-cols-1 md:grid-cols-2 gap-4"
+          className="grid grid-cols-1 md:grid-cols-3 gap-4"
         >
-          {data.ticket.leadershipComment && (
-            <div className="card bg-base-100 p-4 shadow">
-              <h3 className="font-semibold mb-1">Leadership Comment</h3>
-              <p className="text-sm">{data.ticket.leadershipComment}</p>
-            </div>
+          {leadershipComment && (
+            <TicketCommentBlock
+              title="Leadership Comment"
+              comment={leadershipComment.comment || ""}
+              author={leadershipComment.performedBy.userName}
+              date={leadershipComment.createdAt}
+            />
           )}
 
-          {data.ticket.managementAction && (
-            <motion.div
-              variants={fadeUp}
-              className="card bg-base-100 p-4 shadow"
-            >
-              <h3 className="font-semibold mb-1">Management Action</h3>
-              <p className="text-sm">{data.ticket.managementAction}</p>
-            </motion.div>
+          {managementComment && (
+            <TicketCommentBlock
+              title="Management Action"
+              comment={managementComment.comment}
+              author={managementComment.performedBy.userName}
+              date={managementComment.createdAt}
+            />
           )}
 
           {data.ticket.auditorDecision && (
-            <motion.div
-              variants={fadeUp}
-              className="card bg-base-100 p-4 shadow"
-            >
-              <h3 className="font-semibold mb-1">Auditor Decision</h3>
+            <motion.div variants={fadeUp} className="card  p-4 gap-1 shadow">
+              <h3 className="font-semibold ">Auditor Decision</h3>
               <p className="text-sm">{data.ticket.auditorDecision}</p>
+              <p className="text-sm whitespace-pre-wrap">
+                {new Date(data.ticket.updatedAt).toLocaleString()}
+              </p>
             </motion.div>
           )}
+
           <motion.div variants={fadeUp}>
-            <AuditTimeline entityId={data.ticket._id} />
+            <AuditTimeline ticketId={data.ticket._id} />
           </motion.div>
         </motion.div>
       </motion.div>

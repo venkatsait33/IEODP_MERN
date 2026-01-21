@@ -6,6 +6,7 @@ const idempotencySchema = new mongoose.Schema(
     userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     endpoint: String,
     response: Object,
+    createdAt: { type: Date, expires: "24h", default: Date.now },
   },
   { timestamps: true },
 );
