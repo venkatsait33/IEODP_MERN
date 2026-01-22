@@ -29,7 +29,7 @@ const TicketTimeline = ({ status, auditorDecision }) => {
     if (stepKey === TICKET_STATUS.CLOSED && auditorDecision) {
       if (auditorDecision === "REJECTED") return "rejected";
       if (auditorDecision === "REVERIFY") return "reverify";
-      if (auditorDecision === "ACCEPTED") return "completed";
+      if (auditorDecision === "APPROVED") return "completed";
     }
 
     if (stepIndex < currentIndex) return "completed";
@@ -123,7 +123,7 @@ const TicketTimeline = ({ status, auditorDecision }) => {
         </p>
       )}
 
-      {auditorDecision === "ACCEPTED" && (
+      {auditorDecision === "APPROVED" && (
         <p className="text-success text-sm mt-2 font-medium">
           ✅ Ticket Approved & Closed by Auditor
         </p>

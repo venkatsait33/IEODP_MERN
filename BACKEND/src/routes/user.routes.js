@@ -1,9 +1,17 @@
 import express from "express";
-import { createUser, login } from "../controllers/user.controller.js";
+import {
+  createUser,
+  login,
+  sendRestOtp,
+  userRestPassword,
+} from "../controllers/user.controller.js";
 
 const router = express.Router();
 
 router.post("/register", createUser);
 router.post("/login", login);
+
+router.post("/send-rest-otp", sendRestOtp);
+router.post("/rest-password", userRestPassword);
 
 export default router;
