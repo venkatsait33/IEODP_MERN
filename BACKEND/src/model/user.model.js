@@ -46,7 +46,7 @@ const UserSchema = mongoose.Schema(
       type: String,
       enum: ["active", "inactive", "pending", "suspended"],
       default: "active",
-    },
+    }, 
     resetPasswordOtp: {
       type: String,
       default: "",

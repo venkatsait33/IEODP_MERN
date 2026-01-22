@@ -194,7 +194,7 @@ export const userRestPassword = async (req, res) => {
         .status(400)
         .json({ message: "User not found", success: false });
     }
-    if (user.resetPasswordOtp === "" || user.resetPasswordOtp !== otp) {
+    if (String(user.resetPasswordOtp) !== String(otp)) {
       return res.status(400).json({ message: "Invalid OTP", success: false });
     }
     if (user.restOtpExpireAt < Date.now()) {
@@ -214,13 +214,13 @@ export const userRestPassword = async (req, res) => {
             `,
     };
 
-    await transporter.sendMail(mailOptions);
     await user.save();
+    await transporter.sendMail(mailOptions);
     return res
       .status(200)
       .json({ message: "Password reset successfully", success: true });
-  } catch {
-    console.log(error);
+  } catch (error) {
+    console.error(error);
     return res.status(500).json({
       message: error.message,
       success: false,

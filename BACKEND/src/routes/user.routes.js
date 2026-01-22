@@ -12,6 +12,6 @@ router.post("/register", createUser);
 router.post("/login", login);
 
 router.post("/send-rest-otp", sendRestOtp);
-router.post("/rest-password", userRestPassword);
+router.post("/reset-password", userRestPassword);
 
 export default router;
